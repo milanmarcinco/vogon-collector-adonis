@@ -1,18 +1,28 @@
-import { AdminJSProviderConfig } from '@adminjs/adonis'
+import { AdminJSProviderConfig, LucidResource } from '@adminjs/adonis'
 
 import componentLoader from '../app/admin/component_loader.js'
-import authProvider from '../app/admin/auth.js'
+// import authProvider from '../app/admin/auth.js'
+
+import Measurement from '#models/measurement'
+import Parameter from '#models/parameter'
+import Sensor from '#models/sensor'
+import User from '#models/user'
 
 const adminjsConfig: AdminJSProviderConfig = {
   adapter: {
-    enabled: false,
+    enabled: true,
   },
   adminjs: {
     rootPath: '/admin',
     loginPath: '/admin/login',
     logoutPath: '/admin/logout',
     componentLoader,
-    resources: [],
+    resources: [
+      new LucidResource(User, 'postgres'),
+      new LucidResource(Sensor, 'postgres'),
+      new LucidResource(Parameter, 'postgres'),
+      new LucidResource(Measurement, 'postgres'),
+    ],
     pages: {},
     locale: {
       availableLanguages: ['en'],

@@ -1,0 +1,66 @@
+name: vogon-collector
+
+services:
+  mqtt:
+    image: eclipse-mosquitto
+    ports:
+      - 1883:1883
+    volumes:
+      - mqtt_storage:/mosquitto
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+
+  db:
+    image: timescale/timescaledb-ha:pg16
+    volumes:
+      - postgresql_data:/home/postgres/pgdata/data
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "sh -c 'pg_isready -U ${DB_USER} -d ${DB_NAME}'"]
+      interval: 10s
+      start_period: 30s
+
+  # grafana:
+  #   image: grafana/grafana-oss
+  #   volumes:
+  #     - grafana_storage:/var/lib/grafana
+  #   ports:
+  #     - "3000:3000"
+  #   depends_on:
+  #     database:
+  #       condition: service_healthy
+
+  # vogon:
+  #   build: .
+  #   environment:
+  #     VERBOSE: ${VERBOSE}
+  #     LOG_LEVEL: ${LOG_LEVEL}
+  #     DEBUG: ${DEBUG}
+
+  #     HOST: ${HOST}
+  #     PORT: ${PORT}
+
+  #     DB_NAME: ${DB_NAME}
+  #     DB_USER: ${DB_USER}
+  #     DB_PASSWORD: ${DB_PASSWORD}
+  #     DB_HOST: ${DB_HOST}
+  #     DB_PORT: ${DB_PORT}
+
+  #     MQTT_HOST: ${MQTT_HOST}
+  #     MQTT_PORT: ${MQTT_PORT}
+  #   ports:
+  #     - "8000:8000"
+  #   depends_on:
+  #     database:
+  #       condition: service_healthy
+  #     mqtt:
+  #       condition: service_started
+
+volumes:
+  postgresql_data:
+  grafana_storage:
+  mqtt_storage:
