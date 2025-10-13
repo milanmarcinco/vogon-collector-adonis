@@ -1,9 +1,9 @@
 import type { ApplicationService } from '@adonisjs/core/types'
 import mqtt from 'mqtt'
 
+import MqttMessageEvent from '#events/mqtt_message_event'
+import MqttMessageListener from '#listeners/mqtt_message_listener'
 import env from '#start/env'
-import MqttMessageListener from '#listeners/mqtt_message'
-import MqttMessageEvent from '#events/mqtt_message'
 
 declare module '@adonisjs/core/types' {
   interface ContainerBindings {
@@ -54,7 +54,7 @@ export default class MqttProvider {
           })
         )
 
-        logger.info('MQTT[subscriptions]: completed')
+        logger.info('MQTT[subscriptions]: subscribed')
       } catch (error) {
         logger.error('MQTT[subscription_error]', error)
       }
@@ -64,13 +64,22 @@ export default class MqttProvider {
       logger.info('MQTT reconnecting...')
     })
 
+    client.on('disconnect', () => {
+      logger.warn('MQTT[connection]: disconnected')
+    })
+
     client.on('error', (error) => {
       logger.error('MQTT[connection_error]', error)
     })
 
-    client.on('message', (topic, message, packet) => {
-      MqttMessageEvent.dispatch({ topic, message, packet })
-      logger.debug(`MQTT[${topic}]: ${message.toString()}`)
+    client.on('message', (topic, message, _) => {
+      const stringMessage = message.toString()
+      logger.debug(`MQTT[${topic}]: ${stringMessage}`)
+
+      MqttMessageEvent.dispatch({
+        topic,
+        message: stringMessage,
+      })
     })
   }
 
@@ -92,7 +101,9 @@ export default class MqttProvider {
    * Preparing to shutdown the app
    */
   async shutdown() {
+    if (this.app.getEnvironment() !== 'web') return
     const client = await this.app.container.make('mqtt.client')
+    if (!client.stream) return
     await client.endAsync()
   }
 }

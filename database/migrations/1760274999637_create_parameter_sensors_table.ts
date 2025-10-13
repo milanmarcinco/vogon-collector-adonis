@@ -8,7 +8,9 @@ export default class extends BaseSchema {
       table.uuid('parameter_id').notNullable().references('parameters.id').onDelete('CASCADE')
       table.uuid('sensor_id').notNullable().references('sensors.id').onDelete('CASCADE')
 
-      table.primary(['sensor_id', 'parameter_id'])
+      table.primary(['sensor_id', 'parameter_id'], {
+        constraintName: 'parameter_sensor_pkey',
+      })
     })
   }
 

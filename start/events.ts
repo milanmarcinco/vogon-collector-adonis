@@ -1,6 +1,7 @@
-import MqttMessageEvent from '#events/mqtt_message'
 import emitter from '@adonisjs/core/services/emitter'
 
-const MqttMessageListener = () => import('#listeners/mqtt_message')
+import MqttMessageEvent from '#events/mqtt_message_event'
 
-emitter.on(MqttMessageEvent, MqttMessageListener)
+const MqttMessageListener = () => import('#listeners/mqtt_message_listener')
+
+emitter.on(MqttMessageEvent, [MqttMessageListener])

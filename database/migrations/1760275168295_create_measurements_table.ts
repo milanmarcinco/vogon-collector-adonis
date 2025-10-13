@@ -5,6 +5,8 @@ export default class extends BaseSchema {
 
   async up() {
     this.schema.createTable(this.tableName, (table) => {
+      table.uuid('id').defaultTo(this.raw('uuid_generate_v4()'))
+
       table.string('device_address', 255).notNullable()
 
       table
@@ -19,7 +21,9 @@ export default class extends BaseSchema {
       table.timestamp('created_at')
       table.timestamp('updated_at')
 
-      table.primary(['created_at', 'device_address'])
+      table.primary(['created_at', 'device_address', 'id'], {
+        constraintName: 'measurements_pkey',
+      })
     })
   }
 

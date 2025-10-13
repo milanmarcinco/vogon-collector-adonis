@@ -1,7 +1,8 @@
-import { BaseModel, column, manyToMany } from '@adonisjs/lucid/orm'
-import type { ManyToMany } from '@adonisjs/lucid/types/relations'
+import { BaseModel, column, hasMany, manyToMany } from '@adonisjs/lucid/orm'
+import type { HasMany, ManyToMany } from '@adonisjs/lucid/types/relations'
 import { DateTime } from 'luxon'
 
+import Measurement from '#models/measurement'
 import Sensor from '#models/sensor'
 
 export default class Parameter extends BaseModel {
@@ -11,6 +12,9 @@ export default class Parameter extends BaseModel {
   @column()
   declare name: string
 
+  @column()
+  declare code: number
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
@@ -19,4 +23,7 @@ export default class Parameter extends BaseModel {
 
   @manyToMany(() => Sensor)
   declare sensors: ManyToMany<typeof Sensor>
+
+  @hasMany(() => Measurement)
+  declare measurements: HasMany<typeof Measurement>
 }

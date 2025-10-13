@@ -11,6 +11,9 @@ export default class Sensor extends BaseModel {
   @column()
   declare name: string
 
+  @column()
+  declare code: number
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 

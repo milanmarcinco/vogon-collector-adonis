@@ -12,7 +12,7 @@ services:
   db:
     image: timescale/timescaledb-ha:pg16
     volumes:
-      - postgresql_data:/home/postgres/pgdata/data
+      - db_storage:/home/postgres/pgdata/data
     ports:
       - 5432:5432
     environment:
@@ -20,7 +20,7 @@ services:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     healthcheck:
-      test: ["CMD-SHELL", "sh -c 'pg_isready -U ${DB_USER} -d ${DB_NAME}'"]
+      test: ['CMD-SHELL', "sh -c 'pg_isready -U ${DB_USER} -d ${DB_NAME}'"]
       interval: 10s
       start_period: 30s
 
@@ -61,6 +61,6 @@ services:
   #       condition: service_started
 
 volumes:
-  postgresql_data:
-  grafana_storage:
+  db_storage:
   mqtt_storage:
+  grafana_storage:

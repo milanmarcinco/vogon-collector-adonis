@@ -8,10 +8,4 @@ export default class extends BaseSchema {
       SELECT create_hypertable('measurements', 'created_at');
     `)
   }
-
-  async down() {
-    this.schema.raw(`
-      SELECT hypertable_downgrade('measurements');
-    `)
-  }
 }
