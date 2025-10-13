@@ -2,7 +2,7 @@ import type { ApplicationService } from '@adonisjs/core/types'
 import mqtt from 'mqtt'
 
 import env from '#start/env'
-import MqttMessageListener from '#listeners/mqtt_message_listener'
+import MqttMessageListener from '#listeners/mqtt_message'
 import MqttMessageEvent from '#events/mqtt_message'
 
 declare module '@adonisjs/core/types' {

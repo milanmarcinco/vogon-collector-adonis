@@ -1,6 +1,6 @@
 import { BaseEvent } from '@adonisjs/core/events'
 
-import { MqttMessagePayload } from '#listeners/mqtt_message_listener'
+import { MqttMessagePayload } from '#listeners/mqtt_message'
 
 export default class MqttMessageEvent extends BaseEvent {
   /**
