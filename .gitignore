@@ -25,3 +25,8 @@ yarn-error.log
 
 # Platform specific
 .DS_Store
+
+# ===== ===== ===== =====
+
+# EMQX specific ignores
+emqx/certs/
