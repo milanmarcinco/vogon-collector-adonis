@@ -5,7 +5,9 @@ import Sensor from '#models/sensor'
 
 export default class extends BaseSeeder {
   async run() {
-    const sensors = await Sensor.createMany([
+    const uniqueKey = 'name'
+
+    const sensors = await Sensor.updateOrCreateMany(uniqueKey, [
       {
         name: 'dht22',
         code: 0x01,
@@ -16,7 +18,7 @@ export default class extends BaseSeeder {
       },
     ])
 
-    const parameters = await Parameter.createMany([
+    const parameters = await Parameter.updateOrCreateMany(uniqueKey, [
       { name: 'temperature', code: 0x01 },
       { name: 'humidity', code: 0x02 },
       { name: 'pm2.5', code: 0x03 },
