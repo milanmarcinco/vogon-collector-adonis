@@ -3,13 +3,17 @@ import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import { DateTime } from 'luxon'
 
 import Parameter from '#models/parameter'
+import Device from '#models/device'
 
 export default class Measurement extends BaseModel {
   @column({ isPrimary: true })
   declare id: string
 
   @column()
-  declare deviceAddress: string
+  declare deviceId: string
+
+  @belongsTo(() => Device)
+  declare device: BelongsTo<typeof Device>
 
   @column()
   declare parameterId: string

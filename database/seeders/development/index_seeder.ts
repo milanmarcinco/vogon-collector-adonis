@@ -13,6 +13,6 @@ export default class DevelopmentSeeder extends BaseSeeder {
   }
 
   async run() {
-    await this.seed(await import('#database/seeders/common/sensors_and_parameters'))
+    await this.seed(await import('#database/seeders/common/seeder'))
   }
 }

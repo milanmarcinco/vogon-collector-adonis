@@ -22,7 +22,13 @@ services:
       - 1883:1883
       - 8883:8883
       - 18083:18083
+    environment:
+      EMQX_AUTHORIZATION__SOURCES__1__DATABASE: ${DB_NAME}
+      EMQX_AUTHORIZATION__SOURCES__1__USERNAME: ${DB_USER}
+      EMQX_AUTHORIZATION__SOURCES__1__PASSWORD: ${DB_PASSWORD}
+      EMQX_AUTHORIZATION__SOURCES__1__SERVER: ${DB_HOST}:${DB_PORT}
     volumes:
+      - ./emqx/acl.conf:/opt/emqx/etc/acl.conf
       - ./emqx/emqx.conf:/opt/emqx/etc/emqx.conf
       - ./emqx/certs:/opt/emqx/etc/certs
       - emqx_data:/opt/emqx/data

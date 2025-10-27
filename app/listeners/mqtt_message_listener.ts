@@ -6,6 +6,7 @@ import Parameter from '#models/parameter'
 
 import { mqttMeasurementMessageValidator } from '#validators/measurement'
 import MqttMessageEvent from '#events/mqtt_message_event'
+import Device from '#models/device'
 
 export interface MqttMessageTopic {
   topic: string
@@ -32,9 +33,10 @@ export default class MqttMessageListener {
     const data = await mqttMeasurementMessageValidator.validate(payload)
 
     const parameter = await Parameter.findByOrFail('code', data.parameter)
+    const device = await Device.findByOrFail('mac_address', data.address)
 
     await parameter.related('measurements').create({
-      deviceAddress: data.address,
+      deviceId: device.id,
       value: data.value,
     })
   }
