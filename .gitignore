@@ -28,5 +28,4 @@ yarn-error.log
 
 # ===== ===== ===== =====
 
-# EMQX specific ignores
-emqx/certs/
+certs/

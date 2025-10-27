@@ -2,10 +2,9 @@ import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import { DateTime } from 'luxon'
 
-import Parameter from '#models/parameter'
 import Device from '#models/device'
 
-export default class Measurement extends BaseModel {
+export default class MqttAcl extends BaseModel {
   @column({ isPrimary: true })
   declare id: string
 
@@ -13,13 +12,16 @@ export default class Measurement extends BaseModel {
   declare deviceId: string
 
   @column()
-  declare parameterId: string
-
-  @belongsTo(() => Parameter)
-  declare parameter: BelongsTo<typeof Parameter>
+  declare topic: string
 
   @column()
-  declare value: number
+  declare action: 'subscribe' | 'publish' | 'all'
+
+  @column()
+  declare permission: 'allow' | 'deny'
+
+  @column()
+  declare qos: number | null
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

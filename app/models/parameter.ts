@@ -21,9 +21,9 @@ export default class Parameter extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
 
-  @manyToMany(() => Sensor)
-  declare sensors: ManyToMany<typeof Sensor>
-
   @hasMany(() => Measurement)
   declare measurements: HasMany<typeof Measurement>
+
+  @manyToMany(() => Sensor)
+  declare sensors: ManyToMany<typeof Sensor>
 }

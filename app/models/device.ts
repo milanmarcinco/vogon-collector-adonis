@@ -3,6 +3,7 @@ import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 import { DateTime } from 'luxon'
 
 import Measurement from '#models/measurement'
+import MqttAcl from '#models/mqtt_acl'
 import User from '#models/user'
 
 export default class Device extends BaseModel {
@@ -11,9 +12,6 @@ export default class Device extends BaseModel {
 
   @column()
   declare userId: string
-
-  @belongsTo(() => User)
-  declare user: BelongsTo<typeof User>
 
   @column()
   declare macAddress: string
@@ -27,6 +25,12 @@ export default class Device extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
 
+  @belongsTo(() => User)
+  declare user: BelongsTo<typeof User>
+
   @hasMany(() => Measurement)
   declare measurements: HasMany<typeof Measurement>
+
+  @hasMany(() => MqttAcl)
+  declare mqttAcls: HasMany<typeof MqttAcl>
 }
