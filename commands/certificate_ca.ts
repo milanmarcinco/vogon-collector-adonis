@@ -9,9 +9,11 @@ export default class Certificate extends BaseCommand {
 
   static options: CommandOptions = {}
 
+  validityYears = 30
+
   async run() {
     const { certificate, privateKey } = CertificateService.generateCertificateAuthority({
-      expirationYears: 30,
+      expiresAt: new Date(Date.now() + this.validityYears * 365 * 24 * 3600 * 1000),
     })
 
     const certPath = 'certs/ca.pem'

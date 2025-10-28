@@ -16,9 +16,6 @@ export default class Device extends BaseModel {
   @column()
   declare macAddress: string
 
-  @column()
-  declare mtlsCertificate: string
-
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 

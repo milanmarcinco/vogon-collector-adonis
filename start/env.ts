@@ -31,4 +31,6 @@ export default await Env.create(new URL('../', import.meta.url), {
 
   PATH_CA_CERT: Env.schema.string.optional(),
   PATH_CA_KEY: Env.schema.string.optional(),
+
+  CERT_CLIENT_EXPIRY_YEARS: Env.schema.number(),
 })

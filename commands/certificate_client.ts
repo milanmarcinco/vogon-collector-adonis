@@ -17,11 +17,13 @@ export default class CertificateClient extends BaseCommand {
   })
   declare macAddress: string
 
+  validityYears = 10
+
   @inject()
   async run(certificateService: CertificateService) {
     const { certificate, privateKey } = certificateService.generateClientCertificate({
       commonName: this.macAddress,
-      expirationYears: 10,
+      expiresAt: new Date(Date.now() + this.validityYears * 365 * 24 * 3600 * 1000),
     })
 
     const certPath = 'certs/client.pem'

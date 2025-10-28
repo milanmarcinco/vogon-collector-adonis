@@ -29,13 +29,7 @@ export class CertificateService {
     this.caKey = forge.pki.privateKeyFromPem(caKeyPem)
   }
 
-  generateClientCertificate({
-    commonName,
-    expirationYears,
-  }: {
-    commonName: string
-    expirationYears: number
-  }) {
+  generateClientCertificate({ commonName, expiresAt }: { commonName: string; expiresAt: Date }) {
     const { privateKey, publicKey } = generateKeyPairSync('rsa', {
       modulusLength: 2048,
     })
@@ -53,7 +47,7 @@ export class CertificateService {
     cert.serialNumber = CertificateService.generateSerialNumber()
 
     cert.validity.notBefore = new Date()
-    cert.validity.notAfter = new Date(Date.now() + expirationYears * 365 * 24 * 3600 * 1000)
+    cert.validity.notAfter = expiresAt
 
     cert.setSubject([
       { name: 'commonName', value: commonName },
@@ -76,11 +70,11 @@ export class CertificateService {
   generateServerCertificate({
     commonName,
     domainName,
-    expirationYears,
+    expiresAt,
   }: {
     commonName: string
     domainName: string
-    expirationYears: number
+    expiresAt: Date
   }) {
     const { privateKey, publicKey } = generateKeyPairSync('rsa', {
       modulusLength: 2048,
@@ -98,7 +92,7 @@ export class CertificateService {
     cert.serialNumber = CertificateService.generateSerialNumber()
 
     cert.validity.notBefore = new Date()
-    cert.validity.notAfter = new Date(Date.now() + expirationYears * 365 * 24 * 3600 * 1000)
+    cert.validity.notAfter = expiresAt
 
     cert.setSubject([
       { name: 'commonName', value: commonName },
@@ -142,7 +136,7 @@ export class CertificateService {
     }
   }
 
-  static generateCertificateAuthority({ expirationYears }: { expirationYears: number }) {
+  static generateCertificateAuthority({ expiresAt }: { expiresAt: Date }) {
     const { privateKey, publicKey } = generateKeyPairSync('rsa', {
       modulusLength: 2048,
     })
@@ -160,7 +154,7 @@ export class CertificateService {
     cert.serialNumber = CertificateService.generateSerialNumber()
 
     cert.validity.notBefore = new Date()
-    cert.validity.notAfter = new Date(Date.now() + expirationYears * 365 * 24 * 3600 * 1000)
+    cert.validity.notAfter = expiresAt
 
     const attrs = [
       { name: 'commonName', value: 'VogonRoot' },

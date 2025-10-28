@@ -9,7 +9,6 @@ export default class extends BaseSchema {
       table.uuid('user_id').references('id').inTable('users').notNullable().onDelete('CASCADE')
 
       table.string('mac_address').notNullable().unique()
-      table.string('mtls_certificate').notNullable().unique()
 
       table.timestamp('created_at')
       table.timestamp('updated_at')

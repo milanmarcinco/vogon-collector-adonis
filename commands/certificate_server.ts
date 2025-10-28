@@ -23,12 +23,14 @@ export default class CertificateServer extends BaseCommand {
   })
   declare domainName: string
 
+  validityYears = 20
+
   @inject()
   async run(certificateService: CertificateService) {
     const { certificate, privateKey } = certificateService.generateServerCertificate({
       commonName: this.commonName,
       domainName: this.domainName,
-      expirationYears: 20,
+      expiresAt: new Date(Date.now() + this.validityYears * 365 * 24 * 3600 * 1000),
     })
 
     const certPath = 'certs/server.pem'
