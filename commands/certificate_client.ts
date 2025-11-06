@@ -23,15 +23,15 @@ export default class CertificateClient extends BaseCommand {
   async run(certificateService: CertificateService) {
     const { certificate, privateKey } = certificateService.generateClientCertificate({
       commonName: this.macAddress,
-      expiresAt: new Date(Date.now() + this.validityYears * 365 * 24 * 3600 * 1000),
+      validityYears: this.validityYears,
     })
 
-    const certPath = 'certs/client.pem'
+    const certPath = 'infra/certs/client.pem'
     await fs.writeFile(certPath, certificate, {
       encoding: 'utf-8',
     })
 
-    const keyPath = 'certs/client.key'
+    const keyPath = 'infra/certs/client.key'
     await fs.writeFile(keyPath, privateKey, {
       encoding: 'utf-8',
     })

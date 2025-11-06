@@ -28,6 +28,8 @@ export default await Env.create(new URL('../', import.meta.url), {
   // Variables for configuring mqtt connection
   MQTT_HOST: Env.schema.string({ format: 'host' }),
   MQTT_PORT: Env.schema.number(),
+  MQTT_USERNAME: Env.schema.string(),
+  MQTT_PASSWORD: Env.schema.string(),
 
   PATH_CA_CERT: Env.schema.string.optional(),
   PATH_CA_KEY: Env.schema.string.optional(),

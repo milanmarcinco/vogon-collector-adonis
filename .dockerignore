@@ -1,0 +1,11 @@
+/node_modules
+
+docker-compose.yml
+docker-compose-dev.yml
+
+.gitignore
+.editorconfig
+.nvmrc
+
+.env
+.env.example

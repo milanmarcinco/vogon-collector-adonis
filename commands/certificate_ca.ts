@@ -13,15 +13,15 @@ export default class Certificate extends BaseCommand {
 
   async run() {
     const { certificate, privateKey } = CertificateService.generateCertificateAuthority({
-      expiresAt: new Date(Date.now() + this.validityYears * 365 * 24 * 3600 * 1000),
+      validityYears: this.validityYears,
     })
 
-    const certPath = 'certs/ca.pem'
+    const certPath = 'infra/certs/ca.pem'
     await fs.writeFile(certPath, certificate, {
       encoding: 'utf-8',
     })
 
-    const keyPath = 'certs/ca.key'
+    const keyPath = 'infra/certs/ca.key'
     await fs.writeFile(keyPath, privateKey, {
       encoding: 'utf-8',
     })

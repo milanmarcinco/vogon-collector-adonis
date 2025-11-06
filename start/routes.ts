@@ -14,6 +14,11 @@ import swagger from '#config/swagger'
 import { middleware } from '#start/kernel'
 
 const AuthController = () => import('#controllers/auth_controller')
+const DevicesController = () => import('#controllers/devices_controller')
+
+router.get('/healthcheck', async () => ({ success: true }))
+
+// ===== Auth =====
 
 router
   .group(() => {
@@ -32,6 +37,21 @@ router
       )
   })
   .prefix('/auth')
+
+// ===== Business logic routes =====
+
+router
+  .group(() => {
+    router.post('/devices', [DevicesController, 'store'])
+    // router.get('/devices/config', [DevicesController, 'getConfigForDevice'])
+  })
+  .use(
+    middleware.auth({
+      guards: ['api'],
+    })
+  )
+
+// ===== Swagger routes =====
 
 // returns swagger in YAML
 router.get('/swagger', async () => {

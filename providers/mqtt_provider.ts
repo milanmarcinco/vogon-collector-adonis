@@ -18,9 +18,11 @@ export default class MqttProvider {
    * Register bindings to the container
    */
   register() {
-    const { host, port } = {
+    const { host, port, username, password } = {
       host: env.get('MQTT_HOST'),
       port: env.get('MQTT_PORT'),
+      username: env.get('MQTT_USERNAME'),
+      password: env.get('MQTT_PASSWORD'),
     }
 
     const mqttUrl = `mqtt://${host}:${port}`
@@ -31,6 +33,9 @@ export default class MqttProvider {
         reconnectOnConnackError: true,
         protocolVersion: 5,
         manualConnect: true,
+
+        username,
+        password,
       })
 
       return client

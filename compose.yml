@@ -3,41 +3,45 @@ name: vogon-collector
 services:
   timescale:
     image: timescale/timescaledb-ha:pg16
+    container_name: vogon-timescale
     volumes:
       - timescale_storage:/home/postgres/pgdata/data
-    ports:
-      - 5432:5432
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     healthcheck:
       test: ['CMD-SHELL', "sh -c 'pg_isready -U ${DB_USER} -d ${DB_NAME}'"]
-      interval: 10s
-      start_period: 30s
+      interval: 5s
+      timeout: 30s
+      retries: 5
 
   emqx:
     image: emqx/emqx-enterprise:6.0.0
+    container_name: vogon-emqx
     ports:
-      - 1883:1883
-      - 8883:8883
-      - 18083:18083
+      - 8001:1883
+      - 8002:8883
+      - 8003:18083
     environment:
       EMQX_AUTHORIZATION__SOURCES__1__DATABASE: ${DB_NAME}
       EMQX_AUTHORIZATION__SOURCES__1__USERNAME: ${DB_USER}
       EMQX_AUTHORIZATION__SOURCES__1__PASSWORD: ${DB_PASSWORD}
       EMQX_AUTHORIZATION__SOURCES__1__SERVER: ${DB_HOST}:${DB_PORT}
     volumes:
-      - ./emqx/acl.conf:/opt/emqx/etc/acl.conf
-      - ./emqx/emqx.conf:/opt/emqx/etc/emqx.conf
-      - ./emqx/certs:/opt/emqx/etc/certs
+      - ./infra/emqx/acl.conf:/opt/emqx/etc/acl.conf
+      - ./infra/emqx/emqx.conf:/opt/emqx/etc/emqx.conf
+      - ./infra/certs:/opt/emqx/etc/certs
       - emqx_data:/opt/emqx/data
       - emqx_log:/opt/emqx/log
     healthcheck:
       test: ['CMD', '/opt/emqx/bin/emqx', 'ctl', 'status']
       interval: 5s
-      timeout: 25s
+      timeout: 30s
       retries: 5
+    depends_on:
+      timescale:
+        condition: service_healthy
 
   # grafana:
   #   image: grafana/grafana-oss
@@ -49,31 +53,42 @@ services:
   #     database:
   #       condition: service_healthy
 
-  # vogon:
-  #   build: .
-  #   environment:
-  #     VERBOSE: ${VERBOSE}
-  #     LOG_LEVEL: ${LOG_LEVEL}
-  #     DEBUG: ${DEBUG}
+  vogon:
+    container_name: vogon-collector
+    ports:
+      - 8000:3000
+    build: .
+    environment:
+      TZ: ${TZ}
 
-  #     HOST: ${HOST}
-  #     PORT: ${PORT}
+      HOST: ${HOST}
+      PORT: ${PORT}
 
-  #     DB_NAME: ${DB_NAME}
-  #     DB_USER: ${DB_USER}
-  #     DB_PASSWORD: ${DB_PASSWORD}
-  #     DB_HOST: ${DB_HOST}
-  #     DB_PORT: ${DB_PORT}
+      APP_KEY: ${APP_KEY}
 
-  #     MQTT_HOST: ${MQTT_HOST}
-  #     MQTT_PORT: ${MQTT_PORT}
-  #   ports:
-  #     - "8000:8000"
-  #   depends_on:
-  #     database:
-  #       condition: service_healthy
-  #     mqtt:
-  #       condition: service_started
+      LOG_LEVEL: ${LOG_LEVEL}
+      NODE_ENV: ${NODE_ENV}
+
+      DB_NAME: ${DB_NAME}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+
+      MQTT_HOST: ${MQTT_HOST}
+      MQTT_PORT: ${MQTT_PORT}
+      MQTT_USERNAME: ${MQTT_USERNAME}
+      MQTT_PASSWORD: ${MQTT_PASSWORD}
+
+      PATH_CA_CERT: ${PATH_CA_CERT}
+      PATH_CA_KEY: ${PATH_CA_KEY}
+
+      CERT_CLIENT_EXPIRY_YEARS: ${CERT_CLIENT_EXPIRY_YEARS}
+    depends_on:
+      timescale:
+        condition: service_healthy
+      emqx:
+        condition: service_started
 
 volumes:
   emqx_data:

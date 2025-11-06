@@ -1,7 +1,7 @@
-import { generateKeyPairSync, randomBytes } from 'node:crypto'
-import forge from 'node-forge'
-import fs from 'node:fs'
 import env from '#start/env'
+import forge from 'node-forge'
+import { generateKeyPairSync, randomBytes } from 'node:crypto'
+import fs from 'node:fs'
 
 export class CertificateService {
   private caCert: forge.pki.Certificate
@@ -29,7 +29,13 @@ export class CertificateService {
     this.caKey = forge.pki.privateKeyFromPem(caKeyPem)
   }
 
-  generateClientCertificate({ commonName, expiresAt }: { commonName: string; expiresAt: Date }) {
+  generateClientCertificate({
+    commonName,
+    validityYears,
+  }: {
+    commonName: string
+    validityYears: number
+  }) {
     const { privateKey, publicKey } = generateKeyPairSync('rsa', {
       modulusLength: 2048,
     })
@@ -47,7 +53,7 @@ export class CertificateService {
     cert.serialNumber = CertificateService.generateSerialNumber()
 
     cert.validity.notBefore = new Date()
-    cert.validity.notAfter = expiresAt
+    cert.validity.notAfter = new Date(Date.now() + validityYears * 365 * 24 * 3600 * 1000)
 
     cert.setSubject([
       { name: 'commonName', value: commonName },
@@ -70,11 +76,11 @@ export class CertificateService {
   generateServerCertificate({
     commonName,
     domainName,
-    expiresAt,
+    validityYears,
   }: {
     commonName: string
     domainName: string
-    expiresAt: Date
+    validityYears: number
   }) {
     const { privateKey, publicKey } = generateKeyPairSync('rsa', {
       modulusLength: 2048,
@@ -92,7 +98,7 @@ export class CertificateService {
     cert.serialNumber = CertificateService.generateSerialNumber()
 
     cert.validity.notBefore = new Date()
-    cert.validity.notAfter = expiresAt
+    cert.validity.notAfter = new Date(Date.now() + validityYears * 365 * 24 * 3600 * 1000)
 
     cert.setSubject([
       { name: 'commonName', value: commonName },
@@ -136,7 +142,7 @@ export class CertificateService {
     }
   }
 
-  static generateCertificateAuthority({ expiresAt }: { expiresAt: Date }) {
+  static generateCertificateAuthority({ validityYears }: { validityYears: number }) {
     const { privateKey, publicKey } = generateKeyPairSync('rsa', {
       modulusLength: 2048,
     })
@@ -154,7 +160,7 @@ export class CertificateService {
     cert.serialNumber = CertificateService.generateSerialNumber()
 
     cert.validity.notBefore = new Date()
-    cert.validity.notAfter = expiresAt
+    cert.validity.notAfter = new Date(Date.now() + validityYears * 365 * 24 * 3600 * 1000)
 
     const attrs = [
       { name: 'commonName', value: 'VogonRoot' },

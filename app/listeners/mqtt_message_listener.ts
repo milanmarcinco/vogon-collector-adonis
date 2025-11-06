@@ -22,7 +22,7 @@ export interface MqttMessagePayload {
 export default class MqttMessageListener {
   constructor(protected logger: Logger) {}
 
-  static TOPICS: MqttMessageTopic[] = [{ topic: '+/+/raw', qos: 1 }]
+  static TOPICS: MqttMessageTopic[] = [{ topic: 'vogonair/+/raw', qos: 1 }]
 
   async handle(event: MqttMessageEvent) {
     await this.handleMeasurement(event.payload.message)

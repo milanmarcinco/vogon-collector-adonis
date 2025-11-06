@@ -30,15 +30,15 @@ export default class CertificateServer extends BaseCommand {
     const { certificate, privateKey } = certificateService.generateServerCertificate({
       commonName: this.commonName,
       domainName: this.domainName,
-      expiresAt: new Date(Date.now() + this.validityYears * 365 * 24 * 3600 * 1000),
+      validityYears: this.validityYears,
     })
 
-    const certPath = 'certs/server.pem'
+    const certPath = 'infra/certs/server.pem'
     await fs.writeFile(certPath, certificate, {
       encoding: 'utf-8',
     })
 
-    const keyPath = 'certs/server.key'
+    const keyPath = 'infra/certs/server.key'
     await fs.writeFile(keyPath, privateKey, {
       encoding: 'utf-8',
     })
