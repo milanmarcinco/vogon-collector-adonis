@@ -4,6 +4,7 @@ services:
   timescale:
     image: timescale/timescaledb-ha:pg16
     container_name: vogon-timescale
+    restart: unless-stopped
     volumes:
       - timescale_storage:/home/postgres/pgdata/data
     environment:
@@ -19,6 +20,7 @@ services:
   emqx:
     image: emqx/emqx-enterprise:6.0.0
     container_name: vogon-emqx
+    restart: unless-stopped
     ports:
       - 8001:1883
       - 8002:8883
@@ -55,6 +57,7 @@ services:
 
   vogon:
     container_name: vogon-collector
+    restart: unless-stopped
     ports:
       - 8000:3000
     build: .
