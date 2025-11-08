@@ -61,6 +61,7 @@ services:
     ports:
       - 8000:3000
     build: .
+    image: vogon-collector
     environment:
       TZ: ${TZ}
 
