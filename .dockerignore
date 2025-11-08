@@ -1,11 +1,13 @@
 /node_modules
+/infra/certs
+/infra/emqx
 
-docker-compose.yml
-docker-compose-dev.yml
+compose.yml
 
 .gitignore
 .editorconfig
-.nvmrc
+
+eslint.config.js
 
 .env
 .env.example
