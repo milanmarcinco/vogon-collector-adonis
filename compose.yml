@@ -87,6 +87,8 @@ services:
       PATH_CA_KEY: ${PATH_CA_KEY}
 
       CERT_CLIENT_EXPIRY_YEARS: ${CERT_CLIENT_EXPIRY_YEARS}
+    volumes:
+      - ./infra/certs:/app/build/infra/certs:ro
     depends_on:
       timescale:
         condition: service_healthy
