@@ -25,16 +25,18 @@ export default class MqttMessageListener {
   static TOPICS: MqttMessageTopic[] = [{ topic: 'vogonair/+/raw', qos: 1 }]
 
   async handle(event: MqttMessageEvent) {
-    await this.handleMeasurement(event.payload.message)
+    await this.handleMeasurement(event.payload)
   }
 
-  private async handleMeasurement(message: MqttMessagePayload['message']) {
+  private async handleMeasurement({ topic, message }: MqttMessagePayload) {
+    const [_, macAddress, __] = topic.split('/')
+
     const payload = JSON.parse(message)
     const data = await mqttMeasurementMessageValidator.validate(payload)
 
     try {
       const parameter = await Parameter.findByOrFail('code', data.parameter)
-      const device = await Device.findByOrFail('mac_address', data.address)
+      const device = await Device.findByOrFail('mac_address', macAddress)
 
       await parameter.related('measurements').create({
         deviceId: device.id,
