@@ -32,12 +32,16 @@ export default class MqttMessageListener {
     const payload = JSON.parse(message)
     const data = await mqttMeasurementMessageValidator.validate(payload)
 
-    const parameter = await Parameter.findByOrFail('code', data.parameter)
-    const device = await Device.findByOrFail('mac_address', data.address)
+    try {
+      const parameter = await Parameter.findByOrFail('code', data.parameter)
+      const device = await Device.findByOrFail('mac_address', data.address)
 
-    await parameter.related('measurements').create({
-      deviceId: device.id,
-      value: data.value,
-    })
+      await parameter.related('measurements').create({
+        deviceId: device.id,
+        value: data.value,
+      })
+    } catch {
+      this.logger.error('Parameter or device not found for incoming measurement')
+    }
   }
 }
