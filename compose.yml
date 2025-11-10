@@ -5,6 +5,8 @@ services:
     image: timescale/timescaledb-ha:pg16
     container_name: vogon-timescale
     restart: unless-stopped
+    ports:
+      - 8005:5432
     volumes:
       - timescale_storage:/home/postgres/pgdata/data
     environment:
