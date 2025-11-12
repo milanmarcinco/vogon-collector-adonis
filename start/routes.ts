@@ -43,7 +43,10 @@ router
 router
   .group(() => {
     router.post('/devices', [DevicesController, 'store'])
-    // router.get('/devices/config', [DevicesController, 'getConfigForDevice'])
+    router.delete('/devices/:deviceId', [DevicesController, 'destroy'])
+
+    router.get('/devices/:deviceId/config', [DevicesController, 'getConfigForDevice'])
+    router.get('/devices/:deviceId/certificate', [DevicesController, 'getCertificateForDevice'])
   })
   .use(
     middleware.auth({

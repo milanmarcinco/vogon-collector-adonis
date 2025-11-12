@@ -5,9 +5,3 @@ export const storeDeviceValidator = vine.compile(
     macAddress: vine.string(),
   })
 )
-
-// export const getConfigForDeviceValidator = vine.compile(
-//   vine.object({
-//     deviceId: vine.string().uuid(),
-//   })
-// )

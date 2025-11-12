@@ -1,11 +1,11 @@
 import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
+import db from '@adonisjs/lucid/services/db'
 
+import MqttAcl from '#models/mqtt_acl'
 import { CertificateService } from '#services/certificate_service'
 import env from '#start/env'
 import { storeDeviceValidator } from '#validators/device'
-import db from '@adonisjs/lucid/services/db'
-import MqttAcl from '#models/mqtt_acl'
 
 @inject()
 export default class DevicesController {
@@ -39,20 +39,7 @@ export default class DevicesController {
 
       await trx.commit()
 
-      const { certificate, privateKey } = this.certificateService.generateClientCertificate({
-        commonName: device.macAddress,
-        validityYears: this.validityYears,
-      })
-
-      const config = {
-        certificate,
-        privateKey,
-      }
-
-      return response.created({
-        device,
-        config,
-      })
+      return response.created(device)
     } catch {
       await trx.rollback()
     }
@@ -60,21 +47,41 @@ export default class DevicesController {
     return response.internalServerError()
   }
 
-  // async getConfigForDevice({ auth, request, response }: HttpContext) {
-  //   const user = auth.getUserOrFail()
-  //   const { deviceId } = await request.validateUsing(getConfigForDeviceValidator)
-  //   const device = await user.related('devices').query().where('id', deviceId).firstOrFail()
+  async destroy({ auth, params, response }: HttpContext) {
+    const user = auth.getUserOrFail()
+    const device = await user.related('devices').query().where('id', params.deviceId).firstOrFail()
+    await device.delete()
 
-  //   const { certificate, privateKey } = this.certificateService.generateClientCertificate({
-  //     commonName: device.macAddress,
-  //     validityYears: this.validityYears,
-  //   })
+    return response.ok(device)
+  }
 
-  //   const config = {
-  //     certificate,
-  //     privateKey,
-  //   }
+  async getConfigForDevice({ auth, params, response }: HttpContext) {
+    const user = auth.getUserOrFail()
+    const device = await user.related('devices').query().where('id', params.deviceId).firstOrFail()
 
-  //   return response.ok({ config })
-  // }
+    device
+
+    return response.ok({})
+  }
+
+  async getCertificateForDevice({ auth, params, response }: HttpContext) {
+    const user = auth.getUserOrFail()
+    const device = await user.related('devices').query().where('id', params.deviceId).firstOrFail()
+
+    const validFrom = new Date()
+    const validTo = new Date(Date.now() + this.validityYears * 365 * 24 * 3600 * 1000)
+
+    const { certificate, privateKey } = this.certificateService.generateClientCertificate({
+      commonName: device.macAddress,
+      validFrom,
+      validTo,
+    })
+
+    return response.ok({
+      certificate,
+      privateKey,
+      validFrom,
+      validTo,
+    })
+  }
 }

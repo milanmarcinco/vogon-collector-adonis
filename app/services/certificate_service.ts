@@ -29,13 +29,7 @@ export class CertificateService {
     this.caKey = forge.pki.privateKeyFromPem(caKeyPem)
   }
 
-  generateClientCertificate({
-    commonName,
-    validityYears,
-  }: {
-    commonName: string
-    validityYears: number
-  }) {
+  generateClientCertificate(options: { commonName: string; validFrom: Date; validTo: Date }) {
     const { privateKey, publicKey } = generateKeyPairSync('rsa', {
       modulusLength: 2048,
     })
@@ -52,11 +46,11 @@ export class CertificateService {
     cert.publicKey = forgePublic
     cert.serialNumber = CertificateService.generateSerialNumber()
 
-    cert.validity.notBefore = new Date()
-    cert.validity.notAfter = new Date(Date.now() + validityYears * 365 * 24 * 3600 * 1000)
+    cert.validity.notBefore = options.validFrom
+    cert.validity.notAfter = options.validTo
 
     cert.setSubject([
-      { name: 'commonName', value: commonName },
+      { name: 'commonName', value: options.commonName },
       { name: 'organizationName', value: 'Vogon' },
       { name: 'countryName', value: 'SK' },
     ])
@@ -73,14 +67,12 @@ export class CertificateService {
     }
   }
 
-  generateServerCertificate({
-    commonName,
-    domainName,
-    validityYears,
-  }: {
+  generateServerCertificate(options: {
     commonName: string
-    domainName: string
-    validityYears: number
+    sanDns?: string
+    sanIp?: string
+    validFrom: Date
+    validTo: Date
   }) {
     const { privateKey, publicKey } = generateKeyPairSync('rsa', {
       modulusLength: 2048,
@@ -97,11 +89,11 @@ export class CertificateService {
     cert.publicKey = forgePublic
     cert.serialNumber = CertificateService.generateSerialNumber()
 
-    cert.validity.notBefore = new Date()
-    cert.validity.notAfter = new Date(Date.now() + validityYears * 365 * 24 * 3600 * 1000)
+    cert.validity.notBefore = options.validFrom
+    cert.validity.notAfter = options.validTo
 
     cert.setSubject([
-      { name: 'commonName', value: commonName },
+      { name: 'commonName', value: options.commonName },
       { name: 'organizationName', value: 'Vogon' },
       { name: 'countryName', value: 'SK' },
     ])
@@ -125,8 +117,8 @@ export class CertificateService {
       {
         name: 'subjectAltName',
         altNames: [
-          { type: 2, value: domainName }, // DNS
-          // { type: 7, ip: '127.0.0.1' }, // Optional: localhost for testing
+          ...(options.sanDns ? [{ type: 2, value: options.sanDns }] : []),
+          ...(options.sanIp ? [{ type: 7, ip: options.sanIp }] : []),
         ],
       },
     ])
@@ -142,7 +134,7 @@ export class CertificateService {
     }
   }
 
-  static generateCertificateAuthority({ validityYears }: { validityYears: number }) {
+  static generateCertificateAuthority(options: { validFrom: Date; validTo: Date }) {
     const { privateKey, publicKey } = generateKeyPairSync('rsa', {
       modulusLength: 2048,
     })
@@ -159,8 +151,8 @@ export class CertificateService {
     cert.publicKey = forgePublicKey
     cert.serialNumber = CertificateService.generateSerialNumber()
 
-    cert.validity.notBefore = new Date()
-    cert.validity.notAfter = new Date(Date.now() + validityYears * 365 * 24 * 3600 * 1000)
+    cert.validity.notBefore = options.validFrom
+    cert.validity.notAfter = options.validTo
 
     const attrs = [
       { name: 'commonName', value: 'VogonRoot' },

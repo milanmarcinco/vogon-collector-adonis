@@ -4,6 +4,7 @@ import type { CommandOptions } from '@adonisjs/core/types/ace'
 import fs from 'node:fs/promises'
 
 import { CertificateService } from '#services/certificate_service'
+import env from '#start/env'
 
 export default class CertificateServer extends BaseCommand {
   static commandName = 'generate:certificate:server'
@@ -20,25 +21,37 @@ export default class CertificateServer extends BaseCommand {
   @args.string({
     argumentName: 'domain-name',
     description: 'Domain (DNS) name of the server',
+    required: false,
   })
   declare domainName: string
+
+  @args.string({
+    argumentName: 'ip-address',
+    description: 'IP address of the server',
+    required: false,
+  })
+  declare ipAddress: string
 
   validityYears = 20
 
   @inject()
   async run(certificateService: CertificateService) {
+    const certDir = env.get('PATH_CERT_DIR')
+
     const { certificate, privateKey } = certificateService.generateServerCertificate({
       commonName: this.commonName,
-      domainName: this.domainName,
-      validityYears: this.validityYears,
+      sanDns: this.domainName,
+      sanIp: this.ipAddress,
+      validFrom: new Date(),
+      validTo: new Date(Date.now() + this.validityYears * 365 * 24 * 3600 * 1000),
     })
 
-    const certPath = 'infra/certs/server.pem'
+    const certPath = `${certDir}/server.pem`
     await fs.writeFile(certPath, certificate, {
       encoding: 'utf-8',
     })
 
-    const keyPath = 'infra/certs/server.key'
+    const keyPath = `${certDir}/server.key`
     await fs.writeFile(keyPath, privateKey, {
       encoding: 'utf-8',
     })
