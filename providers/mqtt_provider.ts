@@ -14,6 +14,8 @@ declare module '@adonisjs/core/types' {
 export default class MqttProvider {
   constructor(protected app: ApplicationService) {}
 
+  disableMqtt: boolean = env.get('DISABLE_MQTT')
+
   /**
    * Register bindings to the container
    */
@@ -99,6 +101,13 @@ export default class MqttProvider {
   async ready() {
     if (this.app.getEnvironment() !== 'web') return
     const client = await this.app.container.make('mqtt.client')
+
+    if (this.disableMqtt) {
+      const logger = await this.app.container.make('logger')
+      logger.warn('MQTT is disabled. Skipping connection.')
+      return
+    }
+
     client.connect()
   }
 

@@ -31,6 +31,8 @@ export default await Env.create(new URL('../', import.meta.url), {
   MQTT_USERNAME: Env.schema.string(),
   MQTT_PASSWORD: Env.schema.string(),
 
+  DISABLE_MQTT: Env.schema.boolean(),
+
   PATH_CERT_DIR: Env.schema.string(),
   PATH_CA_CERT: Env.schema.string.optional(),
   PATH_CA_KEY: Env.schema.string.optional(),
