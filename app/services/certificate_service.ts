@@ -29,6 +29,21 @@ export class CertificateService {
     this.caKey = forge.pki.privateKeyFromPem(caKeyPem)
   }
 
+  getDatetimeYearsFromNow(years: number) {
+    const now = new Date()
+
+    const then = new Date(
+      now.getFullYear() + years,
+      now.getMonth(),
+      now.getDate(),
+      now.getHours(),
+      now.getMinutes(),
+      now.getSeconds()
+    )
+
+    return { now, then }
+  }
+
   generateClientCertificate(options: { commonName: string; validFrom: Date; validTo: Date }) {
     const { privateKey, publicKey } = generateKeyPairSync('rsa', {
       modulusLength: 2048,

@@ -2,16 +2,23 @@ import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
 import db from '@adonisjs/lucid/services/db'
 
-import MqttAcl from '#models/mqtt_acl'
 import { CertificateService } from '#services/certificate_service'
-import env from '#start/env'
+import { DeviceService } from '#services/device_service'
+
+import MqttAcl from '#models/mqtt_acl'
+
 import { storeDeviceValidator } from '#validators/device'
+
+import env from '#start/env'
 
 @inject()
 export default class DevicesController {
   validityYears: number
 
-  constructor(private certificateService: CertificateService) {
+  constructor(
+    private deviceService: DeviceService,
+    private certificateService: CertificateService
+  ) {
     this.validityYears = env.get('CERT_CLIENT_EXPIRY_YEARS')
   }
 
@@ -55,33 +62,22 @@ export default class DevicesController {
     return response.ok(device)
   }
 
-  async getConfigForDevice({ auth, params, response }: HttpContext) {
+  async getConfigForDevice({ auth, params }: HttpContext) {
     const user = auth.getUserOrFail()
     const device = await user.related('devices').query().where('id', params.deviceId).firstOrFail()
-
-    device
-
-    return response.ok({})
+    return this.deviceService.getDeviceConfig(device)
   }
 
-  async getCertificateForDevice({ auth, params, response }: HttpContext) {
+  async getCertificateForDevice({ auth, params }: HttpContext) {
     const user = auth.getUserOrFail()
     const device = await user.related('devices').query().where('id', params.deviceId).firstOrFail()
 
-    const validFrom = new Date()
-    const validTo = new Date(Date.now() + this.validityYears * 365 * 24 * 3600 * 1000)
+    const { now, then } = this.certificateService.getDatetimeYearsFromNow(this.validityYears)
 
-    const { certificate, privateKey } = this.certificateService.generateClientCertificate({
+    return this.certificateService.generateClientCertificate({
       commonName: device.macAddress,
-      validFrom,
-      validTo,
-    })
-
-    return response.ok({
-      certificate,
-      privateKey,
-      validFrom,
-      validTo,
+      validFrom: now,
+      validTo: then,
     })
   }
 }
