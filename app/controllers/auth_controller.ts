@@ -2,7 +2,7 @@ import User from '#models/user'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class AuthController {
-  async register({ request, response }: HttpContext) {
+  async signUp({ request, response }: HttpContext) {
     const { email, password } = request.only(['email', 'password'])
 
     const user = await User.create({ email, password })
@@ -15,7 +15,7 @@ export default class AuthController {
     })
   }
 
-  async login({ request, response }: HttpContext) {
+  async signIn({ request, response }: HttpContext) {
     const { email, password } = request.only(['email', 'password'])
 
     const user = await User.verifyCredentials(email, password)
@@ -28,7 +28,7 @@ export default class AuthController {
     })
   }
 
-  async logout({ auth, response }: HttpContext) {
+  async signOut({ auth, response }: HttpContext) {
     await auth.use('api').invalidateToken()
     return response.ok({ success: true })
   }

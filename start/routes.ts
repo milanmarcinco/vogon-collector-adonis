@@ -22,12 +22,12 @@ router.get('/healthcheck', async () => ({ success: true }))
 
 router
   .group(() => {
-    router.post('/register', [AuthController, 'register'])
-    router.post('/login', [AuthController, 'login'])
+    router.post('/sign-up', [AuthController, 'signUp'])
+    router.post('/sign-in', [AuthController, 'signIn'])
 
     router
       .group(() => {
-        router.post('/logout', [AuthController, 'logout'])
+        router.post('/sign-out', [AuthController, 'signOut'])
         router.delete('/delete', [AuthController, 'delete'])
       })
       .use(
