@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "vogon",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

@@ -1,0 +1,23 @@
+meta {
+  name: sign up
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{api_url}}/auth/sign-up
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "milan@marcinco.xyz",
+    "password": "milanmarcinco123"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

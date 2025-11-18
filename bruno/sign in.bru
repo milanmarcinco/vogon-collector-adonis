@@ -1,0 +1,23 @@
+meta {
+  name: sign in
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{api_url}}/auth/sign-in
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "milan@marcinco.xyz",
+    "password": "milanmarcinco123"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
