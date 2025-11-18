@@ -27,7 +27,8 @@ router
 
     router
       .group(() => {
-        router.post('/sign-out', [AuthController, 'signOut'])
+        router.get('/me', [AuthController, 'me'])
+        router.delete('/sign-out', [AuthController, 'signOut'])
         router.delete('/delete', [AuthController, 'delete'])
       })
       .use(

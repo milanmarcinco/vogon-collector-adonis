@@ -28,6 +28,11 @@ export default class AuthController {
     })
   }
 
+  async me({ auth, response }: HttpContext) {
+    const user = auth.getUserOrFail()
+    return response.ok(user)
+  }
+
   async signOut({ auth, response }: HttpContext) {
     await auth.use('api').invalidateToken()
     return response.ok({ success: true })
